@@ -717,10 +717,12 @@ class Rump( Host ):
             error("%s: This particular rump unikernel has already been intialized!")
             return
 
-        initcmd = 'rumprun ' + self.rplatform + ' -M ' + str(self.rmem) + ' -i ' + ' -I if,vioif,"-net tap,script=no,ifname=' + self.name + '-eth1" ' + ' -W if,inet,static,' + self.rip + '/24 ' + self.rargs + ' -- ' + self.rimage + ' ' + self.iargs
+        initcmd = 'rumprun ' + self.rplatform + ' -M ' + str(self.rmem) + ' -i ' + ' -I if,vioif,"-net tap,script=no,ifname=s1-eth1@r1-eth1" ' + ' -W if,inet,static,' + self.rip + '/24 ' + self.rargs + ' -- ' + self.rimage + ' ' + self.iargs
 
-        self.shell = Popen(initcmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT) # , close_fds=True )
-    
+        print(initcmd)
+
+        self.shell = self._popen(initcmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT) # , close_fds=True )
+        
         self.stdin = self.shell.stdin
         self.stdout = self.shell.stdout
         self.pid = self.shell.pid
