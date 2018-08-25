@@ -708,8 +708,6 @@ class Rump( Host ):
         ]
         call(initcmd, shell=True)
 
-        # Example rumprun command:
-
         # rumprun-bake hw_virtio ./nginx.bin bin/nginx
 
     def sendCmd( self, *args, **kwargs ):
