@@ -2,6 +2,7 @@
 """
 This is the most simple example to showcase Containernet.
 """
+import os
 from mininet.node import Controller, Rump
 from mininet.cli import CLI
 from mininet.link import TCLink
@@ -24,8 +25,8 @@ r1 = net.addHost('r1',
   rplatform='qemu',
   rmem=128,
   rcpu=1,
-  rimage='../test/nginx.rump',
-  rargs='-b ../test/data.iso,/data',
+  rimage=os.getcwd() + '/test/nginx.rump',
+  rargs='-b ' + os.getcwd() + '/test/data.iso,/data',
   iargs='-c /data/conf/nginx.conf')
 
 r2 = net.addHost('r2',
@@ -34,8 +35,8 @@ r2 = net.addHost('r2',
   rplatform='qemu',
   rmem=128,
   rcpu=1,
-  rimage='../test/nginx.rump',
-  rargs='-b ../test/data.iso,/data',
+  rimage=os.getcwd() + '/test/nginx.rump',
+  rargs='-b ' + os.getcwd() + '/test/data.iso,/data',
   iargs='-c /data/conf/nginx.conf')
 
 info('*** Creating links...\n')
@@ -46,7 +47,7 @@ info('*** Starting network\n')
 net.start()
 
 info('*** Testing connectivity\n')
-net.ping([r1, r2])
+net.ping([s1, r2])
 
 info('*** Running CLI\n')
 
