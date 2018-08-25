@@ -688,7 +688,7 @@ class Rump( Host ):
     # @param rargs Additional rumprun commands for the instantiation command
     # @param iargs Commandline parameters for the instance on initialization (image-specific)
     #
-    def __init__(self, name='', rplatform='kvm', rmem=128, rcpu=1, rimage=None, rargs=None, iargs=None, **kwargs):
+    def __init__(self, name='', rplatform='kvm', rmem=128, rcpu=1, rimage=None, rargs=None, rip=None, iargs=None, **kwargs):
         
         if rplatform not in self._platforms:
             error("%s: Specified hypervisor platform not supported!")
@@ -703,6 +703,7 @@ class Rump( Host ):
         self.rcpu = rcpu
         self.rimage = rimage
         self.rargs = rargs
+        self.rip = rip
         self.iargs = iargs
         Host.__init__( self, name, **kwargs )
 
@@ -716,7 +717,7 @@ class Rump( Host ):
             error("%s: This particular rump unikernel has already been intialized!")
             return
 
-        initcmd = 'rumprun ' + self.rplatform + ' -M ' + str(self.rmem) + ' -i ' + ' -I if,vioif,"-net tap,script=no,ifname=' + self.name + '-eth1" ' + ' -W if,inet,static,10.0.0.11/24 ' + self.rargs + ' -- ' + self.rimage + ' ' + self.iargs
+        initcmd = 'rumprun ' + self.rplatform + ' -M ' + str(self.rmem) + ' -i ' + ' -I if,vioif,"-net tap,script=no,ifname=' + self.name + '-eth1" ' + ' -W if,inet,static,' + self.rip + '/24 ' + self.rargs + ' -- ' + self.rimage + ' ' + self.iargs
 
         self.shell = Popen(initcmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT) # , close_fds=True )
     
