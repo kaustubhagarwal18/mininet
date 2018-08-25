@@ -15,6 +15,8 @@ Host: a virtual host. By default, a host is simply a shell; commands
     hosts share the root file system, but they may also specify private
     directories.
 
+Rump: A Rump kernel host. 
+
 CPULimitedHost: a virtual host whose CPU bandwidth is limited by
     RT or CFS bandwidth limiting.
 
@@ -669,13 +671,20 @@ class Rump( Node ):
     """Node that represents a rumprun unikernel.
     """
 
-    def __init__(self, name, dimage, dcmd=None, **kwargs):
+    def __init__(self, name, rimage, rcmd=None, **kwargs):
+        self.rimage = rimage
+        self.rargs = rargs
         Host.__init__( self, name, **kwargs )
 
-     # Command support via shell process in namespace
+    # Initialize the rumpkernel VM
     def startShell( self, *args, **kwargs ):
-        pass
 
+        # Example rumprun command:
+
+        # rumprun qemu -M 128 -i -b images/data.iso,/data -- nginx.bin -c /data/conf/nginx.conf
+
+        pass
+    
     def sendCmd( self, *args, **kwargs ):
         pass
 
