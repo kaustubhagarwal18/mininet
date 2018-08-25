@@ -59,8 +59,9 @@ import pty
 import re
 import signal
 import select
-import libvirt
-from subprocess import Popen, PIPE, STDOUT
+import pexpect
+
+from subprocess import call, Popen, PIPE, STDOUT
 from time import sleep
 
 from mininet.log import info, error, warn, debug
@@ -715,20 +716,14 @@ class Rump( Host ):
             error("%s: This particular rump unikernel has already been intialized!")
             return
 
-        initcmd = [
-            'rumprun', self.rplatform,
-            '-M', str(self.rmem), '-i',
-            '-I if,vioif,"-net tap,script=no,ifname=' + self.name + '-eth1"',
-            '-W if,inet,static,10.0.0.11/24',
-            self.rargs,
-            '--',
-            self.rimage, self.iargs
-        ]
-        
-        self.shell = self._popen( initcmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True )
+        initcmd = 'rumprun ' + self.rplatform + ' -M ' + str(self.rmem) + ' -i ' + ' -I if,vioif,"-net tap,script=no,ifname=' + self.name + '-eth1" ' + ' -W if,inet,static,10.0.0.11/24 ' + self.rargs + ' -- ' + self.rimage + ' ' + self.iargs
+
+        self.shell = Popen(initcmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT) # , close_fds=True )
+    
         self.stdin = self.shell.stdin
         self.stdout = self.shell.stdout
         self.pid = self.shell.pid
+
         # Maintain mapping between file descriptors and nodes
         # This is useful for monitoring multiple nodes
         # using select.poll()
