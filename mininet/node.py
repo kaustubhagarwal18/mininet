@@ -697,7 +697,6 @@ class Rump( Host ):
             error("%s: This particular rump unikernel has already been intialized!")
             return
 
-        # Remove any old instances with this name
         initcmd = [
             "rumprun", self.rplatform,
             "-M", self.rmem,
