@@ -665,6 +665,23 @@ class Host( Node ):
     "A host is simply a Node"
     pass
 
+# class Rump( Node):
+#     """Node that represents a rumprun unikernel.
+#     """
+#
+#     def __init__(self, name, dimage, dcmd=None, **kwargs):
+# 
+#      # Command support via shell process in namespace
+#     def startShell( self, *args, **kwargs ):
+#
+#     def sendCmd( self, *args, **kwargs ):
+#
+#     def popen( self, *args, **kwargs ):
+#
+#     def terminate( self ):
+#
+#     def cmd(self, *args, **kwargs ):
+
 class CPULimitedHost( Host ):
 
     "CPU limited host"
