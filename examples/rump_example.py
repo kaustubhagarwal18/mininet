@@ -10,10 +10,14 @@ from mininet.net import Mininet
 setLogLevel('info')
 
 net = Mininet(controller=Controller)
-info('*** Adding controller\n')
+
+info('*** Adding controller...\n')
 net.addController('c0')
 
-info('*** Adding rumprun\n')
+info('*** Adding a switches...\n')
+s1 = net.addSwitch('s1')
+
+info('*** Adding rumprun host...\n')
 r1 = net.addHost('r1',
   cls=Rump,
   rplatform='qemu',
@@ -22,8 +26,6 @@ r1 = net.addHost('r1',
   rimage='../test/nginx.rump',
   rargs='-b ../test/data.iso,/data',
   iargs='-c /data/conf/nginx.conf')
-
-ip='10.0.0.251',
 
 r2 = net.addHost('r2',
   cls=Rump,
@@ -34,16 +36,20 @@ r2 = net.addHost('r2',
   rargs='-b ../test/data.iso,/data',
   iargs='-c /data/conf/nginx.conf')
 
-info('*** Adding a switch\n')
-s1 = net.addSwitch('s1')
-info('*** Creating links\n')
+info('*** Creating links...\n')
 net.addLink(s1, r1)
 net.addLink(s1, r2)
-#info('*** Starting network\n')
-#net.start()
-# info('*** Testing connectivity\n')
-# net.ping([r1, r2])
-# info('*** Running CLI\n')
-# CLI(net)
-# info('*** Stopping network')
-#net.stop()
+
+info('*** Starting network\n')
+net.start()
+
+info('*** Testing connectivity\n')
+net.ping([r1, r2])
+
+info('*** Running CLI\n')
+
+CLI(net)
+
+info('*** Stopping network')
+
+net.stop()
