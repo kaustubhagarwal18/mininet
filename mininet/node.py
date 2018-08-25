@@ -679,17 +679,16 @@ class Rump( Node ):
     # @param rmem The amount of allocated RAM for the instance
     # @param rcpu The amount of cores allocated to the isntance
     # @param riamge The binary image specified for the platform
-    # @param rcmd Additional rumprun commands for the instantiation command
-    # @param icmd Commandline parameters for the instance on initialization (image-specific)
+    # @param rargs Additional rumprun commands for the instantiation command
+    # @param iargs Commandline parameters for the instance on initialization (image-specific)
     #
-    def __init__(self, name='', rplatform='kvm', rmem=128, rcpu=1, rimage=None, rcmd=None, icmd=None, **kwargs):
+    def __init__(self, name='', rplatform='kvm', rmem=128, rcpu=1, rimage=None, rargs=None, iargs=None, **kwargs):
         self.rplatform = rplatform
         self.rmem = rmem
         self.rcpu = rcpu
         self.rimage = rimage
-        self.rcmd = rcmd
         self.rargs = rargs
-        self.icmd = icmd
+        self.iargs = iargs
         Host.__init__( self, name, **kwargs )
 
     def startShell( self, *args, **kwargs ):
@@ -713,12 +712,6 @@ class Rump( Node ):
         # Example rumprun command:
 
         # rumprun-bake hw_virtio ./nginx.bin bin/nginx
-
-
-
-        # rumprun qemu -M 128 -i -b images/data.iso,/data -- nginx.bin -c /data/conf/nginx.conf
-
-        pass
 
     def sendCmd( self, *args, **kwargs ):
         pass
