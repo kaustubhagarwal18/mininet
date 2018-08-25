@@ -667,7 +667,7 @@ class Host( Node ):
     "A host is simply a Node"
     pass
 
-class Rump( Node ):
+class Rump( Host ):
     """Node that represents a rumprun unikernel.
     """
 
