@@ -15,7 +15,7 @@ Host: a virtual host. By default, a host is simply a shell; commands
     hosts share the root file system, but they may also specify private
     directories.
 
-Rump: A Rump kernel host. 
+Rump: A Rump kernel host.
 
 CPULimitedHost: a virtual host whose CPU bandwidth is limited by
     RT or CFS bandwidth limiting.
@@ -719,7 +719,7 @@ class Rump( Node ):
         # rumprun qemu -M 128 -i -b images/data.iso,/data -- nginx.bin -c /data/conf/nginx.conf
 
         pass
-    
+
     def sendCmd( self, *args, **kwargs ):
         pass
 
