@@ -665,12 +665,12 @@ class Host( Node ):
     "A host is simply a Node"
     pass
 
-class Rump( Node):
+class Rump( Node ):
     """Node that represents a rumprun unikernel.
     """
 
     def __init__(self, name, dimage, dcmd=None, **kwargs):
-        pass
+        Host.__init__( self, name, **kwargs )
 
      # Command support via shell process in namespace
     def startShell( self, *args, **kwargs ):
