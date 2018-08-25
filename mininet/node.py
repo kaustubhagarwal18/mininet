@@ -60,7 +60,7 @@ import re
 import signal
 import select
 import libvirt
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, STDOUT
 from time import sleep
 
 from mininet.log import info, error, warn, debug
@@ -711,20 +711,21 @@ class Rump( Host ):
     #
     def startShell( self, *args, **kwargs ):
         "Initialize the rumpkernel VM"
-        if self.instance:
+        if self.shell:
             error("%s: This particular rump unikernel has already been intialized!")
             return
 
         initcmd = [
-            "rumprun", self.rplatform,
-            "-M", self.rmem,
-        #   "-b", "data.iso,/data",
+            'rumprun', self.rplatform,
+            '-M', str(self.rmem), '-i',
+            '-I if,vioif,"-net tap,script=no,ifname=' + self.name + '-eth1"',
+            '-W if,inet,static,10.0.0.11/24',
             self.rargs,
-            "--",
-            self.rimage, self.icmd
+            '--',
+            self.rimage, self.iargs
         ]
-
-        self.shell = Popen( initcmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True )
+        
+        self.shell = self._popen( initcmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True )
         self.stdin = self.shell.stdin
         self.stdout = self.shell.stdout
         self.pid = self.shell.pid
@@ -739,8 +740,18 @@ class Rump( Host ):
         self.readbuf = ''
         self.waiting = False
 
+    def _popen( self, cmd, **params ):
+        """Internal method: spawn and return a process
+            cmd: command to run (list)
+            params: parameters to Popen()"""
+        # Leave this is as an instance method for now
+        assert self
+        popen = Popen( cmd, **params )
+        debug( '_popen', cmd, popen.pid )
+        return popen
+
     def sendCmd( self, *args, **kwargs ):
-        pass
+        return False
 
     # 
     # Open up a VM instance of the rump unikernel so we can "speak" to it

@@ -12,13 +12,28 @@ setLogLevel('info')
 net = Mininet(controller=Controller)
 info('*** Adding controller\n')
 net.addController('c0')
+
 info('*** Adding rumprun\n')
-r1 = net.addHost('r1', ip='10.0.0.251', cls=Rump,
-                rimage='-- ./test/nginx.rump -c /data/conf/nginx.conf',
-                rargs='-b ./test/data.iso,/data')
-r2 = net.addHost('r2', ip='10.0.0.252', cls=Rump,
-                rimage='-- ./test/nginx.rump -c /data/conf/nginx.conf',
-                rargs='-b ./test/images/data.iso,/data')
+r1 = net.addHost('r1',
+  cls=Rump,
+  rplatform='qemu',
+  rmem=128,
+  rcpu=1,  
+  rimage='../test/nginx.rump',
+  rargs='-b ../test/data.iso,/data',
+  iargs='-c /data/conf/nginx.conf')
+
+ip='10.0.0.251',
+
+r2 = net.addHost('r2',
+  cls=Rump,
+  rplatform='qemu',
+  rmem=128,
+  rcpu=1,  
+  rimage='../test/nginx.rump',
+  rargs='-b ../test/data.iso,/data',
+  iargs='-c /data/conf/nginx.conf')
+
 info('*** Adding a switch\n')
 s1 = net.addSwitch('s1')
 info('*** Creating links\n')
