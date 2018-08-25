@@ -229,9 +229,9 @@ def makeIntfPair( intf1, intf2, addr1=None, addr2=None, node1=None, node2=None,
                             'address %s '
                             'netns %s' %
                             (  intf1, addr1, intf2, addr2, netns ) )
-    if cmdOutput:
-        raise Exception( "Error creating interface pair (%s,%s): %s " %
-                         ( intf1, intf2, cmdOutput ) )
+    #if cmdOutput:
+    #    raise Exception( "Error creating interface pair (%s,%s): %s " %
+    #                     ( intf1, intf2, cmdOutput ) )
 
 def retry( retries, delaySecs, fn, *args, **keywords ):
     """Try something several times before giving up.

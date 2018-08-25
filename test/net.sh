@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH=$PATH:~/work/ucl/unikernels/rumprun/rumprun/bin
+
 ip tuntap add tap0 mode tap
 ip addr add 10.0.0.10/24 dev tap0
 ip link set dev tap0 up
