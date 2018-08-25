@@ -13,8 +13,12 @@ net = Mininet(controller=Controller)
 info('*** Adding controller\n')
 net.addController('c0')
 info('*** Adding rumprun\n')
-r1 = net.addHost('r1', ip='10.0.0.251', cls=Rump, rimage='~/img')
-r2 = net.addRump('r2', ip='10.0.0.252', cls=Rump, rimage='~/img')
+r1 = net.addHost('r1', ip='10.0.0.251', cls=Rump,
+                rimage='-- ./test/nginx.rump -c /data/conf/nginx.conf',
+                rargs='-b ./test/data.iso,/data')
+r2 = net.addHost('r2', ip='10.0.0.252', cls=Rump,
+                rimage='-- ./test/nginx.rump -c /data/conf/nginx.conf',
+                rargs='-b ./test/images/data.iso,/data')
 info('*** Adding a switch\n')
 s1 = net.addSwitch('s1')
 info('*** Creating links\n')
