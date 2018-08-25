@@ -19,6 +19,7 @@ s1 = net.addSwitch('s1')
 
 info('*** Adding rumprun host...\n')
 r1 = net.addHost('r1',
+  rip='10.0.0.1',
   cls=Rump,
   rplatform='qemu',
   rmem=128,
@@ -28,6 +29,7 @@ r1 = net.addHost('r1',
   iargs='-c /data/conf/nginx.conf')
 
 r2 = net.addHost('r2',
+  rip='10.0.0.2',
   cls=Rump,
   rplatform='qemu',
   rmem=128,
