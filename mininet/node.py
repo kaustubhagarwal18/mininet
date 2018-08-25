@@ -671,15 +671,50 @@ class Rump( Node ):
     """Node that represents a rumprun unikernel.
     """
 
-    def __init__(self, name, rimage, rcmd=None, **kwargs):
+    ##
+    #
+    #
+    # @param name The name of the instance
+    # @param rplatform The platform the unikernel intends to run
+    # @param rmem The amount of allocated RAM for the instance
+    # @param rcpu The amount of cores allocated to the isntance
+    # @param riamge The binary image specified for the platform
+    # @param rcmd Additional rumprun commands for the instantiation command
+    # @param icmd Commandline parameters for the instance on initialization (image-specific)
+    #
+    def __init__(self, name='', rplatform='kvm', rmem=128, rcpu=1, rimage=None, rcmd=None, icmd=None, **kwargs):
+        self.rplatform = rplatform
+        self.rmem = rmem
+        self.rcpu = rcpu
         self.rimage = rimage
+        self.rcmd = rcmd
         self.rargs = rargs
+        self.iargs = iargs
         Host.__init__( self, name, **kwargs )
 
-    # Initialize the rumpkernel VM
     def startShell( self, *args, **kwargs ):
+        "Initialize the rumpkernel VM"
+        if self.instance:
+            error("%s: This particular rump unikernel has already been intialized!")
+            return
+
+        # Remove any old instances with this name
+        initcmd = [
+            "rumprun", self.rplatform,
+            "-M", self.rmem,
+        #   "-b", "data.iso,/data",
+            self.rargs,
+            "--",
+            self.rimage,
+            self.iargs
+        ]
+        call([initcmd, shell=True)
 
         # Example rumprun command:
+
+        # rumprun-bake hw_virtio ./nginx.bin bin/nginx
+
+
 
         # rumprun qemu -M 128 -i -b images/data.iso,/data -- nginx.bin -c /data/conf/nginx.conf
 
