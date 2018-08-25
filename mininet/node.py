@@ -59,6 +59,7 @@ import pty
 import re
 import signal
 import select
+import libvirt
 from subprocess import Popen, PIPE
 from time import sleep
 
@@ -671,8 +672,12 @@ class Rump( Host ):
     """Node that represents a rumprun unikernel.
     """
 
-    ##
+    # Supported platforms by Rump
+    _platforms = ["ec2", "iso", "kvm", "qemu", "xen"]
+
+
     #
+    # Rump unikernel constructor
     #
     # @param name The name of the instance
     # @param rplatform The platform the unikernel intends to run
@@ -683,6 +688,15 @@ class Rump( Host ):
     # @param iargs Commandline parameters for the instance on initialization (image-specific)
     #
     def __init__(self, name='', rplatform='kvm', rmem=128, rcpu=1, rimage=None, rargs=None, iargs=None, **kwargs):
+        
+        if rplatform not in self._platforms:
+            error("%s: Specified hypervisor platform not supported!")
+
+        # self.conn = libvirt.openReadOnly(None)
+        # if conn == None:
+        #     print 'Failed to open connection to the hypervisor'
+        #     sys.exit(1)
+        
         self.rplatform = rplatform
         self.rmem = rmem
         self.rcpu = rcpu
@@ -691,36 +705,55 @@ class Rump( Host ):
         self.iargs = iargs
         Host.__init__( self, name, **kwargs )
 
+    #
+    # Initialize the unikernel image
+    #
+    #
     def startShell( self, *args, **kwargs ):
         "Initialize the rumpkernel VM"
         if self.instance:
             error("%s: This particular rump unikernel has already been intialized!")
             return
 
-        # Remove any old instances with this name
         initcmd = [
             "rumprun", self.rplatform,
             "-M", self.rmem,
         #   "-b", "data.iso,/data",
             self.rargs,
             "--",
-            self.rimage,
-            self.icmd
+            self.rimage, self.icmd
         ]
-        call(initcmd, shell=True)
 
-        # Example rumprun command:
-
-        # rumprun-bake hw_virtio ./nginx.bin bin/nginx
+        self.shell = Popen( initcmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True )
+        self.stdin = self.shell.stdin
+        self.stdout = self.shell.stdout
+        self.pid = self.shell.pid
+        # Maintain mapping between file descriptors and nodes
+        # This is useful for monitoring multiple nodes
+        # using select.poll()
+        self.outToNode[ self.stdout.fileno() ] = self
+        self.inToNode[ self.stdin.fileno() ] = self
+        self.execed = False
+        self.lastCmd = None
+        self.lastPid = None
+        self.readbuf = ''
+        self.waiting = False
 
     def sendCmd( self, *args, **kwargs ):
         pass
 
+    # 
+    # Open up a VM instance of the rump unikernel so we can "speak" to it
+    #
+    # @param args Arguemnts passed to the unikernel instance
+    #
     def popen( self, *args, **kwargs ):
         pass
 
     def terminate( self ):
-        pass
+        termcmd = [
+            "rumpstop"
+        ]
 
     def cmd(self, *args, **kwargs ):
         pass
