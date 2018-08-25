@@ -689,7 +689,7 @@ class Rump( Node ):
         self.rimage = rimage
         self.rcmd = rcmd
         self.rargs = rargs
-        self.iargs = iargs
+        self.icmd = icmd
         Host.__init__( self, name, **kwargs )
 
     def startShell( self, *args, **kwargs ):
@@ -706,9 +706,9 @@ class Rump( Node ):
             self.rargs,
             "--",
             self.rimage,
-            self.iargs
+            self.icmd
         ]
-        call([initcmd, shell=True)
+        call(initcmd, shell=True)
 
         # Example rumprun command:
 
