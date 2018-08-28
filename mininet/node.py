@@ -15,8 +15,6 @@ Host: a virtual host. By default, a host is simply a shell; commands
     hosts share the root file system, but they may also specify private
     directories.
 
-Rump: A Rump kernel host.
-
 CPULimitedHost: a virtual host whose CPU bandwidth is limited by
     RT or CFS bandwidth limiting.
 
@@ -59,9 +57,7 @@ import pty
 import re
 import signal
 import select
-import pexpect
-
-from subprocess import call, Popen, PIPE, STDOUT
+from subprocess import Popen, PIPE
 from time import sleep
 
 from mininet.log import info, error, warn, debug
@@ -668,104 +664,6 @@ class Node( object ):
 class Host( Node ):
     "A host is simply a Node"
     pass
-
-class Rump( Host ):
-    """Node that represents a rumprun unikernel.
-    """
-
-    # Supported platforms by Rump
-    _platforms = ["ec2", "iso", "kvm", "qemu", "xen"]
-
-
-    #
-    # Rump unikernel constructor
-    #
-    # @param name The name of the instance
-    # @param rplatform The platform the unikernel intends to run
-    # @param rmem The amount of allocated RAM for the instance
-    # @param rcpu The amount of cores allocated to the isntance
-    # @param riamge The binary image specified for the platform
-    # @param rargs Additional rumprun commands for the instantiation command
-    # @param iargs Commandline parameters for the instance on initialization (image-specific)
-    #
-    def __init__(self, name='', rplatform='kvm', rmem=128, rcpu=1, rimage=None, rargs=None, rip=None, iargs=None, **kwargs):
-        
-        if rplatform not in self._platforms:
-            error("%s: Specified hypervisor platform not supported!")
-
-        # self.conn = libvirt.openReadOnly(None)
-        # if conn == None:
-        #     print 'Failed to open connection to the hypervisor'
-        #     sys.exit(1)
-        
-        self.rplatform = rplatform
-        self.rmem = rmem
-        self.rcpu = rcpu
-        self.rimage = rimage
-        self.rargs = rargs
-        self.rip = rip
-        self.iargs = iargs
-        Host.__init__( self, name, **kwargs )
-
-    #
-    # Initialize the unikernel image
-    #
-    #
-    def startShell( self, *args, **kwargs ):
-        "Initialize the rumpkernel VM"
-        if self.shell:
-            error("%s: This particular rump unikernel has already been intialized!")
-            return
-
-        initcmd = 'rumprun ' + self.rplatform + ' -M ' + str(self.rmem) + ' -i ' + ' -I if,vioif,"-net tap,script=no,ifname=s1-eth1@r1-eth1" ' + ' -W if,inet,static,' + self.rip + '/24 ' + self.rargs + ' -- ' + self.rimage + ' ' + self.iargs
-
-        print(initcmd)
-
-        self.shell = self._popen(initcmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT) # , close_fds=True )
-        
-        self.stdin = self.shell.stdin
-        self.stdout = self.shell.stdout
-        self.pid = self.shell.pid
-
-        # Maintain mapping between file descriptors and nodes
-        # This is useful for monitoring multiple nodes
-        # using select.poll()
-        self.outToNode[ self.stdout.fileno() ] = self
-        self.inToNode[ self.stdin.fileno() ] = self
-        self.execed = False
-        self.lastCmd = None
-        self.lastPid = None
-        self.readbuf = ''
-        self.waiting = False
-
-    def _popen( self, cmd, **params ):
-        """Internal method: spawn and return a process
-            cmd: command to run (list)
-            params: parameters to Popen()"""
-        # Leave this is as an instance method for now
-        assert self
-        popen = Popen( cmd, **params )
-        debug( '_popen', cmd, popen.pid )
-        return popen
-
-    def sendCmd( self, *args, **kwargs ):
-        return False
-
-    # 
-    # Open up a VM instance of the rump unikernel so we can "speak" to it
-    #
-    # @param args Arguemnts passed to the unikernel instance
-    #
-    def popen( self, *args, **kwargs ):
-        pass
-
-    def terminate( self ):
-        termcmd = [
-            "rumpstop"
-        ]
-
-    def cmd(self, *args, **kwargs ):
-        pass
 
 class CPULimitedHost( Host ):
 
